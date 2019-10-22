@@ -22,7 +22,9 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
 
     public function getRedirectUrl()
     {
-        return $this->getRequest()->getEndpoint();
+        if (isset($this->data['BRQ_REDIRECTURL'])) {
+            return $this->data['BRQ_REDIRECTURL'];
+        }
     }
 
     public function getRedirectMethod()
