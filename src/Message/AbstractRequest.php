@@ -7,8 +7,8 @@ namespace Omnipay\Buckaroo\Message;
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    public $testEndpoint = 'https://testcheckout.buckaroo.nl/nvp/';
-    public $liveEndpoint = 'https://checkout.buckaroo.nl/nvp/';
+    public $testEndpoint = 'https://testcheckout.buckaroo.nl/html/';
+    public $liveEndpoint = 'https://checkout.buckaroo.nl/html/';
 
     public function getWebsiteKey()
     {
