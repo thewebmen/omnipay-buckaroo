@@ -1,0 +1,29 @@
+{
+  "name": "thewebmen/omnipay-buckaroo",
+  "type": "library",
+  "description": "Buckaroo driver for the Omnipay payment processing library",
+  "keywords": [
+    "buckaroo",
+    "gateway",
+    "merchant",
+    "omnipay",
+    "pay",
+    "payment"
+  ],
+  "license": "MIT",
+  "autoload": {
+    "psr-4": { "Omnipay\\Buckaroo\\" : "src/" }
+  },
+  "require": {
+    "omnipay/common": "~3.0"
+  },
+  "require-dev": {
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.0.x-dev"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
