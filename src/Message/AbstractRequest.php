@@ -2,39 +2,66 @@
 
 namespace Omnipay\Buckaroo\Message;
 
+use Guzzle\Http\Message\Response;
+
 /**
  * Buckaroo Abstract Request
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-    public $testEndpoint = 'https://testcheckout.buckaroo.nl/html/';
-    public $liveEndpoint = 'https://checkout.buckaroo.nl/html/';
+    /**
+     * @var string
+     */
+    protected $testEndpoint = 'https://testcheckout.buckaroo.nl/json/';
 
+    /**
+     * @var string
+     */
+    protected $liveEndpoint = 'https://checkout.buckaroo.nl/json/';
+
+    /**
+     * @return mixed
+     */
     public function getWebsiteKey()
     {
         return $this->getParameter('websiteKey');
     }
 
+    /**
+     * @return mixed
+     */
     public function setWebsiteKey($value)
     {
         return $this->setParameter('websiteKey', $value);
     }
 
+    /**
+     * @return mixed
+     */
     public function getSecretKey()
     {
         return $this->getParameter('secretKey');
     }
 
+    /**
+     * @return mixed
+     */
     public function setSecretKey($value)
     {
         return $this->setParameter('secretKey', $value);
     }
 
+    /**
+     * @return mixed
+     */
     public function getCulture()
     {
         return $this->getParameter('culture');
     }
 
+    /**
+     * @return mixed
+     */
     public function setCulture($value)
     {
         return $this->setParameter('culture', $value);
@@ -130,6 +157,9 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('pushfailureUrl', $value);
     }
 
+    /**
+     * @return []
+     */
     public function getData()
     {
         $this->validate('websiteKey', 'secretKey', 'amount', 'returnUrl');
@@ -148,24 +178,36 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $data['Brq_push'] = $this->getPushUrl();
         $data['Brq_pushfailure'] = $this->getPushFailureUrl();
 
+        foreach ($data as $key => $value) {
+            if (empty($value)) {
+                unset($data[$key]);
+            }
+        }
+
         return $data;
     }
 
-    public function generateSignature($data)
+    /**
+     * @param string $method
+     * @param string $endpoint
+     * @param array|null $data
+     * @return string
+     */
+    public function generateAuthorizationHeader($method, $endpoint, array $data = null)
     {
-        uksort($data, 'strcasecmp');
+        $time = time();
+        $nonce = 'nonce_' . rand(0000000, 9999999);
+        $post = base64_decode(md5(json_encode($data), true));
+        $value = $this->getWebsiteKey() . $method . $this->getEndpoint() . $endpoint . $time . $nonce . $post;
+        $hmac = hash_hmac('sha256', $value, $this->getSecretKey(),true);
 
-        $str = '';
-        foreach ($data as $key => $value) {
-            if (strcasecmp($key, 'Brq_signature') === 0) {
-                continue;
-            }
-            $str .= $key.'='.urldecode($value);
-        }
-
-        return sha1($str.$this->getSecretKey());
+        return 'hmac ' . $this->getWebsiteKey() . ':' . base64_encode($hmac) . ':' . $nonce . ':' . $time;
     }
 
+    /**
+     * @param mixed $data
+     * @return \Omnipay\Common\Message\ResponseInterface
+     */
     public function sendData($data)
     {
         $data['Brq_signature'] = $this->generateSignature($data);
@@ -173,8 +215,32 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->response = new PurchaseResponse($this, $data);
     }
 
+    /**
+     * @return string
+     */
     public function getEndpoint()
     {
         return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
+    }
+
+    /**
+     * Execute the Guzzle request.
+     *
+     * @param string $method
+     * @param string $endpoint
+     * @param array $data|null
+     * @return Response
+     */
+    protected function sendRequest($method, $endpoint, array $data = null)
+    {
+
+        return $this->httpClient->createRequest(
+            $method,
+            $this->getEndpoint() . $endpoint,
+            [
+                'json' => $data,
+                'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data)
+            ]
+        )->send();
     }
 }

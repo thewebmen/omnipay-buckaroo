@@ -10,13 +10,15 @@ namespace Omnipay\Buckaroo\Message;
  */
 class PurchaseRequest extends AbstractRequest
 {
-    public function getData()
+    public function sendData($data)
     {
-        $data = parent::getData();
-        unset($data['Brq_payment_method']);
-        unset($data['Brq_service_ideal_issuer']);
-        unset($data['Brq_requestedservices']);
+        $httpResponse = $this->sendRequest('POST', 'Transaction', $data);
 
-        return $data;
+        var_dump($httpResponse->getBody(true));
+        die;
+
+        parse_str($httpResponse->getBody(true), $body);
+
+        return new PurchaseResponse($this, $body);
     }
 }
