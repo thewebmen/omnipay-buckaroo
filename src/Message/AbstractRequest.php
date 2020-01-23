@@ -3,6 +3,8 @@
 namespace Omnipay\Buckaroo\Message;
 
 use Guzzle\Http\Message\Response;
+use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Buckaroo Abstract Request
@@ -12,12 +14,12 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * @var string
      */
-    protected $testEndpoint = 'https://testcheckout.buckaroo.nl/json/';
+    protected $testEndpoint = 'testcheckout.buckaroo.nl/json/';
 
     /**
      * @var string
      */
-    protected $liveEndpoint = 'https://checkout.buckaroo.nl/json/';
+    protected $liveEndpoint = 'checkout.buckaroo.nl/json/';
 
     /**
      * @return mixed
@@ -164,27 +166,39 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     {
         $this->validate('websiteKey', 'secretKey', 'amount', 'returnUrl');
 
-        $data = array();
-        $data['Brq_websitekey'] = $this->getWebsiteKey();
-        $data['Brq_amount'] = $this->getAmount();
-        $data['Brq_currency'] = $this->getCurrency();
-        $data['Brq_invoicenumber'] = $this->getTransactionId();
-        $data['Brq_description'] = $this->getDescription();
-        $data['Brq_return'] = $this->getReturnUrl();
-        $data['Brq_returncancel'] = $this->getCancelUrl();
-        $data['Brq_returnreject'] = $this->getRejectUrl();
-        $data['Brq_returnerror'] = $this->getErrorUrl();
-        $data['Brq_culture'] = $this->getCulture();
-        $data['Brq_push'] = $this->getPushUrl();
-        $data['Brq_pushfailure'] = $this->getPushFailureUrl();
+        $data = [];
+        $data['Currency'] = $this->getCurrency();
+        $data['AmountDebit'] = $this->getAmount();
+        $data['Invoice'] = $this->getTransactionId();
+        $data['Description'] = $this->getDescription();
 
-        foreach ($data as $key => $value) {
-            if (empty($value)) {
-                unset($data[$key]);
-            }
-        }
+        $data['ReturnURL'] = $this->getReturnUrl();
+        $data['ReturnURLCancel'] = $this->getCancelUrl();
+        $data['ReturnURLError'] = $this->getErrorUrl();
+        $data['ReturnURLReject'] = $this->getRejectUrl();
+        $data['PushURL'] = $this->getPushUrl();
+        $data['PushURLFailure'] = $this->getPushFailureUrl();
 
         return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    public function generateSignature($data)
+    {
+        uksort($data, 'strcasecmp');
+
+        $str = '';
+        foreach ($data as $key => $value) {
+            if ($key == 'brq_signature') {
+                continue;
+            }
+            $str .= $key.'='.urldecode($value);
+        }
+
+        return sha1($str.$this->getSecretKey());
     }
 
     /**
@@ -195,13 +209,14 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      */
     public function generateAuthorizationHeader($method, $endpoint, array $data = null)
     {
+        $url = strtolower(urlencode($this->getEndpoint() . $endpoint));
         $time = time();
         $nonce = 'nonce_' . rand(0000000, 9999999);
-        $post = base64_decode(md5(json_encode($data), true));
-        $value = $this->getWebsiteKey() . $method . $this->getEndpoint() . $endpoint . $time . $nonce . $post;
-        $hmac = hash_hmac('sha256', $value, $this->getSecretKey(),true);
+        $post = base64_encode(md5(json_encode($data), true));
+        $value = $this->getWebsiteKey() . $method . $url . $time . $nonce . $post;
+        $hmac = base64_encode(hash_hmac('sha256', $value, $this->getSecretKey(),true));
 
-        return 'hmac ' . $this->getWebsiteKey() . ':' . base64_encode($hmac) . ':' . $nonce . ':' . $time;
+        return 'hmac ' . $this->getWebsiteKey() . ':' . $hmac . ':' . $nonce . ':' . $time;
     }
 
     /**
@@ -210,8 +225,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      */
     public function sendData($data)
     {
-        $data['Brq_signature'] = $this->generateSignature($data);
-
         return $this->response = new PurchaseResponse($this, $data);
     }
 
@@ -229,18 +242,18 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      * @param string $method
      * @param string $endpoint
      * @param array $data|null
-     * @return Response
+     * @return ResponseInterface
      */
     protected function sendRequest($method, $endpoint, array $data = null)
     {
-
-        return $this->httpClient->createRequest(
+        return $this->httpClient->request(
             $method,
-            $this->getEndpoint() . $endpoint,
+            'https://' . $this->getEndpoint() . $endpoint,
             [
-                'json' => $data,
-                'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data)
-            ]
-        )->send();
+                'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data),
+                'Content-Type' => 'application/json',
+            ],
+            json_encode($data)
+        );
     }
 }

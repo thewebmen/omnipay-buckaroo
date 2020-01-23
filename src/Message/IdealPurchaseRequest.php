@@ -12,9 +12,21 @@ class IdealPurchaseRequest extends PurchaseRequest
     public function getData()
     {
         $data = parent::getData();
-        
-        $data['Brq_payment_method'] = 'ideal';
-        $data['Brq_service_ideal_issuer'] = $this->getIssuer() ?: '';
+
+        $data['Services'] = [
+            'ServiceList' => [
+                [
+                    'Action' => 'Pay',
+                    'Name' => 'ideal',
+                    'Parameters' => [
+                        [
+                            'Name' => 'issuer',
+                            'Value' => $this->getIssuer()
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
         return $data;
     }

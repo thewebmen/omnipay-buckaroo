@@ -2,6 +2,8 @@
 
 namespace Omnipay\Buckaroo;
 
+use Omnipay\Buckaroo\Message\PayPalPurchaseRequest;
+
 /**
  * Buckaroo PayPal Gateway
  */
@@ -14,6 +16,6 @@ class PayPalGateway extends BuckarooGateway
 
     public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Buckaroo\Message\PayPalPurchaseRequest', $parameters);
+        return $this->createRequest(PayPalPurchaseRequest::class, $parameters);
     }
 }

@@ -14,34 +14,34 @@ class CompletePurchaseResponse extends AbstractResponse
 
     public function isSuccessful()
     {
-        return static::SUCCESS === $this->getCode();
+        return self::SUCCESS === $this->getCode();
     }
 
     public function getCode()
     {
-        if (isset($this->data['BRQ_STATUSCODE'])) {
-            return $this->data['BRQ_STATUSCODE'];
+        if (isset($this->data['brq_statuscode'])) {
+            return $this->data['brq_statuscode'];
         }
     }
 
     public function getMessage()
     {
-        if (isset($this->data['BRQ_STATUSMESSAGE'])) {
-            return $this->data['BRQ_STATUSMESSAGE'];
+        if (isset($this->data['brq_statusmessage'])) {
+            return $this->data['brq_statusmessage'];
         }
     }
 
     public function getTransactionReference()
     {
-        if (isset($this->data['BRQ_PAYMENT'])) {
-            return $this->data['BRQ_PAYMENT'];
+        if (isset($this->data['brq_payment'])) {
+            return $this->data['brq_payment'];
         }
     }
 
     public function getTransactionId()
     {
-        if (isset($this->data['BRQ_INVOICENUMBER'])) {
-            return $this->data['BRQ_INVOICENUMBER'];
+        if (isset($this->data['brq_invoicenumber'])) {
+            return $this->data['brq_invoicenumber'];
         }
     }
 }

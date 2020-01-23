@@ -7,7 +7,16 @@ class BancontactMrCashPurchaseRequest extends AbstractRequest
     public function getData()
     {
         $data = parent::getData();
-        $data['Brq_payment_method'] = 'bancontactmrcash';
+
+        $data['Services'] = [
+            'ServiceList' => [
+                [
+                    'Action' => 'Pay',
+                    'Name' => 'bancontactmrcash',
+                ]
+            ]
+        ];
+        
         return $data;
     }
 }

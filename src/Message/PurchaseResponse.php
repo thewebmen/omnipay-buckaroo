@@ -21,13 +21,13 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
 
     public function isRedirect()
     {
-        return isset($this->data['BRQ_REDIRECTURL']);
+        return isset($this->data->RequiredAction->RedirectURL);
     }
 
     public function getRedirectUrl()
     {
         if ($this->isRedirect()) {
-            return $this->data['BRQ_REDIRECTURL'];
+            return $this->data->RequiredAction->RedirectURL;
         }
 
         return $this->getRequest()->getEndpoint();
@@ -35,16 +35,11 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
 
     public function getRedirectMethod()
     {
-        return isset($this->data['BRQ_REDIRECTURL']) ? 'GET' : 'POST';
-    }
-
-    public function getRedirectData()
-    {
-        return $this->data;
+        return 'GET';
     }
 
     public function getMessage()
     {
-        return isset($this->data['BRQ_APIERRORMESSAGE']) ? $this->data['BRQ_APIERRORMESSAGE'] : null;
+        return isset($this->data->Status->SubCode->Description) ? $this->data->Status->SubCode->Description : null;
     }
 }

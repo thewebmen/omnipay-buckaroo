@@ -2,6 +2,8 @@
 
 namespace Omnipay\Buckaroo;
 
+use Omnipay\Buckaroo\Message\BancontactMrCashPurchaseRequest;
+
 class BancontactMrCashGateway extends CreditCardGateway
 {
     public function getName()
@@ -11,6 +13,6 @@ class BancontactMrCashGateway extends CreditCardGateway
 
     public function purchase(array $parameters = [])
     {
-        return $this->createRequest('\Omnipay\Buckaroo\Message\BancontactMrCashPurchaseRequest', $parameters);
+        return $this->createRequest(BancontactMrCashPurchaseRequest::class, $parameters);
     }
 }

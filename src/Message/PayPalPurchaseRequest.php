@@ -10,7 +10,15 @@ class PayPalPurchaseRequest extends AbstractRequest
     public function getData()
     {
         $data = parent::getData();
-        $data['Brq_payment_method'] = 'paypal';
+
+        $data['Services'] = [
+            'ServiceList' => [
+                [
+                    'Action' => 'Pay',
+                    'Name' => 'paypal',
+                ]
+            ]
+        ];
 
         return $data;
     }
