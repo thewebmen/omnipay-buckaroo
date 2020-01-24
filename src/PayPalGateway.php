@@ -7,7 +7,7 @@ use Omnipay\Buckaroo\Message\PayPalPurchaseRequest;
 /**
  * Buckaroo PayPal Gateway
  */
-class PayPalGateway extends BuckarooGateway
+class PayPalGateway extends AbstractGateway
 {
     public function getName()
     {

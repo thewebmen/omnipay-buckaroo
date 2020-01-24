@@ -5,7 +5,7 @@ namespace Omnipay\Buckaroo\Message;
 /**
  * Buckaroo PayPal Purchase Request
  */
-class PayPalPurchaseRequest extends AbstractRequest
+class PayPalPurchaseRequest extends PurchaseRequest
 {
     public function getData()
     {

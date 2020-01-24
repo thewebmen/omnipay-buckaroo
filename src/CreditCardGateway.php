@@ -3,16 +3,15 @@
 namespace Omnipay\Buckaroo;
 
 use Omnipay\Buckaroo\Message\CreditCardPurchaseRequest;
-use Omnipay\Common\AbstractGateway;
 
 /**
  * Buckaroo Credit Card Gateway
  */
-class CreditCardGateway extends BuckarooGateway
+class CreditCardGateway extends AbstractGateway
 {
     public function getName()
     {
-        return 'Buckaroo Credit Card';
+        return 'Buckaroo Creditcard';
     }
 
     public function getPaymentMethod($value)

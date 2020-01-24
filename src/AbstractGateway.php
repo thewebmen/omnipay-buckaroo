@@ -4,18 +4,12 @@ namespace Omnipay\Buckaroo;
 
 use Omnipay\Buckaroo\Message\CompletePurchaseRequest;
 use Omnipay\Buckaroo\Message\PurchaseRequest;
-use Omnipay\Common\AbstractGateway;
 
 /**
- * Buckaroo Credit Card Gateway
+ * Buckaroo Abstract Gateway
  */
-class BuckarooGateway extends AbstractGateway
+abstract class AbstractGateway extends \Omnipay\Common\AbstractGateway
 {
-    public function getName()
-    {
-        return 'Buckaroo Gateway';
-    }
-
     public function getDefaultParameters()
     {
         return array(

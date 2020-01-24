@@ -18,4 +18,13 @@ class PurchaseRequest extends AbstractRequest
 
         return new PurchaseResponse($this, $data);
     }
+
+    public function getHeaders()
+    {
+        $headers = parent::getHeaders();
+
+        $headers['culture'] = $this->getCulture();
+
+        return $headers;
+    }
 }

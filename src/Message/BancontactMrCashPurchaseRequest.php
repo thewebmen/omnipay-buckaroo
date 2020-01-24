@@ -2,7 +2,10 @@
 
 namespace Omnipay\Buckaroo\Message;
 
-class BancontactMrCashPurchaseRequest extends AbstractRequest
+/**
+ * Buckaroo Bancontact Purchase Request
+ */
+class BancontactMrCashPurchaseRequest extends PurchaseRequest
 {
     public function getData()
     {
@@ -16,7 +19,7 @@ class BancontactMrCashPurchaseRequest extends AbstractRequest
                 ]
             ]
         ];
-        
+
         return $data;
     }
 }

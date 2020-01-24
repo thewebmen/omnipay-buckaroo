@@ -160,7 +160,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
-     * @return []
+     * @return array
      */
     public function getData()
     {
@@ -180,6 +180,16 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         $data['PushURLFailure'] = $this->getPushFailureUrl();
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return [
+            'Content-Type' => 'application/json',
+        ];
     }
 
     /**
@@ -241,18 +251,19 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
      *
      * @param string $method
      * @param string $endpoint
-     * @param array $data|null
+     * @param array $data
      * @return ResponseInterface
      */
-    protected function sendRequest($method, $endpoint, array $data = null)
+    protected function sendRequest($method, $endpoint, array $data)
     {
+        $headers = array_merge($this->getHeaders(), [
+            'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data)
+        ]);
+
         return $this->httpClient->request(
             $method,
             'https://' . $this->getEndpoint() . $endpoint,
-            [
-                'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data),
-                'Content-Type' => 'application/json',
-            ],
+            $headers,
             json_encode($data)
         );
     }
