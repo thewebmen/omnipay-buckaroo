@@ -17,26 +17,20 @@ class IdealPurchaseRequest extends PurchaseRequest
             'ServiceList' => [
                 [
                     'Action' => 'Pay',
-                    'Name' => 'ideal',
-                    'Parameters' => [
-                        [
-                            'Name' => 'issuer',
-                            'Value' => $this->getIssuer()
-                        ]
-                    ]
+                    'Name' => 'ideal'
                 ]
             ]
         ];
+        
+        if ($this->getIssuer()) {
+            $data['Services']['ServiceList'][0]['Parameters'] = [
+                'Name' => 'issuer',
+                'Value' => $this->getIssuer()
+            ];
+        } else {
+            $data['ContinueOnIncomplete'] = 1;
+        }
 
         return $data;
-    }
-
-    public function validate()
-    {
-        parent::validate();
-
-        if (!$this->getIssuer()) {
-            throw new InvalidRequestException("The issuer parameter is required");
-        }
     }
 }

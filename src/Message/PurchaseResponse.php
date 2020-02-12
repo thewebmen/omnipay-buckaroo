@@ -38,8 +38,8 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
         return 'GET';
     }
 
-    public function getMessage()
+    public function getRedirectData()
     {
-        return isset($this->data->Status->SubCode->Description) ? $this->data->Status->SubCode->Description : null;
+        return $this->data;
     }
 }

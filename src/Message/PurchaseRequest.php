@@ -14,7 +14,7 @@ class PurchaseRequest extends AbstractRequest
     {
         $httpResponse = $this->sendRequest('POST', 'Transaction', $data);
 
-        $data = json_decode($httpResponse->getBody()->getContents());
+        $data = json_decode($httpResponse->getBody());
 
         return new PurchaseResponse($this, $data);
     }

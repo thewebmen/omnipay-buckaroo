@@ -260,11 +260,11 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             'Authorization' => $this->generateAuthorizationHeader($method, $endpoint, $data)
         ]);
 
-        return $this->httpClient->request(
+        return $this->httpClient->createRequest(
             $method,
             'https://' . $this->getEndpoint() . $endpoint,
             $headers,
             json_encode($data)
-        );
+        )->send();
     }
 }
