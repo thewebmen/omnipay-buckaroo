@@ -2,18 +2,14 @@
 
 namespace Omnipay\Buckaroo;
 
-use Omnipay\Common\AbstractGateway;
+use Omnipay\Buckaroo\Message\CompletePurchaseRequest;
+use Omnipay\Buckaroo\Message\PurchaseRequest;
 
 /**
- * Buckaroo Credit Card Gateway
+ * Buckaroo Abstract Gateway
  */
-class BuckarooGateway extends AbstractGateway
+abstract class AbstractGateway extends \Omnipay\Common\AbstractGateway
 {
-    public function getName()
-    {
-        return 'Buckaroo Gateway';
-    }
-
     public function getDefaultParameters()
     {
         return array(
@@ -45,11 +41,11 @@ class BuckarooGateway extends AbstractGateway
 
     public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Buckaroo\Message\PurchaseRequest', $parameters);
+        return $this->createRequest(PurchaseRequest::class, $parameters);
     }
 
     public function completePurchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\Buckaroo\Message\CompletePurchaseRequest', $parameters);
+        return $this->createRequest(CompletePurchaseRequest::class, $parameters);
     }
 }

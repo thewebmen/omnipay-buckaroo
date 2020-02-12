@@ -2,8 +2,12 @@
 
 namespace Omnipay\Buckaroo\Message;
 
+use Omnipay\Common\Exception\RuntimeException;
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RedirectResponseInterface;
+use SilverStripe\Omnipay\Model\Message\PurchaseRedirectResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse as HttpRedirectResponse;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
  * Buckaroo Purchase Response
@@ -17,21 +21,25 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
 
     public function isRedirect()
     {
-        return true;
+        return isset($this->data->RequiredAction->RedirectURL);
     }
 
     public function getRedirectUrl()
     {
+        if ($this->isRedirect()) {
+            return $this->data->RequiredAction->RedirectURL;
+        }
+
         return $this->getRequest()->getEndpoint();
     }
 
     public function getRedirectMethod()
     {
-        return 'POST';
+        return 'GET';
     }
 
-    public function getRedirectData()
+    public function getMessage()
     {
-        return $this->data;
+        return isset($this->data->Status->SubCode->Description) ? $this->data->Status->SubCode->Description : null;
     }
 }

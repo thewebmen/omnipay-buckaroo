@@ -2,12 +2,24 @@
 
 namespace Omnipay\Buckaroo\Message;
 
-class BancontactMrCashPurchaseRequest extends AbstractRequest
+/**
+ * Buckaroo Bancontact Purchase Request
+ */
+class BancontactMrCashPurchaseRequest extends PurchaseRequest
 {
     public function getData()
     {
         $data = parent::getData();
-        $data['Brq_payment_method'] = 'bancontactmrcash';
+
+        $data['Services'] = [
+            'ServiceList' => [
+                [
+                    'Action' => 'Pay',
+                    'Name' => 'bancontactmrcash',
+                ]
+            ]
+        ];
+
         return $data;
     }
 }

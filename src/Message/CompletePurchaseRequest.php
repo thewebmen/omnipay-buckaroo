@@ -13,12 +13,10 @@ class CompletePurchaseRequest extends AbstractRequest
     {
         $this->validate('websiteKey', 'secretKey', 'amount');
 
-        $originalData = $this->httpRequest->request->all();
-        $data = array_change_key_case($originalData, CASE_UPPER);
+        $data = $this->httpRequest->request->all();
+        $signature = isset($data['brq_signature']) ? $data['brq_signature'] : null;
 
-        $signature = isset($data['BRQ_SIGNATURE']) ? strtolower($data['BRQ_SIGNATURE']) : null;
-
-        if ($signature !== $this->generateSignature($originalData)) {
+        if ($signature !== $this->generateSignature($data)) {
             throw new InvalidRequestException('Incorrect signature');
         }
 
