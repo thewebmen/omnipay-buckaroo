@@ -27,4 +27,28 @@ class PurchaseRequest extends AbstractRequest
 
         return $headers;
     }
+
+    public function getData()
+    {
+        $data = parent::getData();
+
+        $data['ContinueOnIncomplete'] = 1;
+        
+        if ($this->getPaymentMethod()) {
+            $data['Services'] = [
+                'ServiceList' => [
+                    [
+                        'Action' => 'Pay',
+                        'Name' => $this->getPaymentMethod(),
+                        'Parameters' => [
+                            'Name' => 'issuer',
+                            'Value' => $this->getIssuer()
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return $data;
+    }
 }
