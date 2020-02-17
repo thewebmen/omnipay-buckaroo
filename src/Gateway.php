@@ -2,6 +2,7 @@
 
 namespace Omnipay\Buckaroo;
 
+use Omnipay\Buckaroo\Message\CompletePurchaseRequest;
 use Omnipay\Buckaroo\Message\PurchaseRequest;
 
 /**
