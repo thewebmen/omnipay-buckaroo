@@ -31,9 +31,9 @@ class IdealPurchaseRequest extends PurchaseRequest
         return $data;
     }
 
-    public function validate()
+    public function validate(...$args)
     {
-        parent::validate();
+        parent::validate($args);
 
         if (!$this->getIssuer()) {
             throw new InvalidRequestException("The issuer parameter is required");
